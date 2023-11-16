@@ -27,8 +27,8 @@ resource "google_compute_instance" "vm_instance" {
   boot_disk {
 
     initialize_params {
-      # image = "debian-cloud/debian-11"
-      image = "cos-cloud/cos-stable"
+       image = "debian-cloud/debian-11"
+      #image = "cos-cloud/cos-stable"
     }
   }
 
@@ -41,4 +41,25 @@ resource "google_compute_instance" "vm_instance" {
 
 output "ip" {
   value = google_compute_instance.vm_instance.network_interface.0.network_ip
+}
+
+resource "google_compute_firewall" "firewall" {
+  name    = "terraform-firewall"
+  network = google_compute_network.vpc_network.name
+
+  allow {
+    protocol = "icmp"
+  }
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "22"]
+  }
+
+  target_tags = ["web"]
+  source_ranges = ["0.0.0.0/0"]
+}
+
+output "external_ip" {
+value = google_compute_instance.vm_instance.network_interface.0.access_config.0.nat_ip
 }
