@@ -60,6 +60,37 @@ resource "google_compute_firewall" "firewall" {
   source_ranges = ["0.0.0.0/0"]
 }
 
+resource "google_storage_bucket" "backup-bucket1" {
+  name          = "backup-mariadb1"
+  location      = "US"
+  force_destroy = true
+  uniform_bucket_level_access = true
+
+versioning {
+  enabled = true
+}
+
+  lifecycle_rule {
+    condition {
+      with_state = "ARCHIVED"
+      num_newer_versions = 180
+    }
+    action {
+      type = "Delete"
+    }
+  }
+
+   lifecycle_rule {
+    condition {
+      age = 0
+      days_since_noncurrent_time = 180
+    }
+    action {
+      type = "Delete"
+    }
+  }
+}
+
 output "external_ip" {
 value = google_compute_instance.vm_instance.network_interface.0.access_config.0.nat_ip
 }
