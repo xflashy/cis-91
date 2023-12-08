@@ -29,4 +29,18 @@
         path: /var/lib/mysql
         src: /dev/sdb
         fstype: ext4
-        state: present   
+        state: present 
+
+- hosts: all
+  tasks:
+    - name: install pip
+      apt:
+       
+      vars:
+        ansible_python_interpreter: /usr/bin/python3
+
+    - name: Sets the root password
+      mysql_user:
+        name: root
+        password: "{{ the_flash }}"
+        login_unix_socket: /var/run/mysqld/mysqld.sock
