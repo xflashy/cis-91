@@ -11,6 +11,7 @@
           - php
           - mariadb-server
           - mediawiki
+          - python3-pip
     - name: Copy file with owner and permissions
       ansible.builtin.copy:
         src: index.html
@@ -39,8 +40,36 @@
       vars:
         ansible_python_interpreter: /usr/bin/python3
 
-    - name: Sets the root password
-      mysql_user:
-        name: root
-        password: "{{ the_flash }}"
+    - name: Pip Pre-Reqs for SQL
+      become: yes
+      pip:
+        name: PyMySQL
+
+    - name: Enable MySQL
+      become: yes
+      service:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: Create database for MediaWiki
+      become: yes
+      become_user: root
+      community.mysql.mysql_db:
         login_unix_socket: /var/run/mysqld/mysqld.sock
+        name: "my_wiki"
+        state: present
+  
+
+    - name: Create MediaWiki DB user
+      become: yes
+      become_user: root
+      community.mysql.mysql_user:
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+        state: present
+        name: "christian"
+        password: "the_flash"
+        priv:
+          "*.*:ALL,GRANT"
+        
+          
