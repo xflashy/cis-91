@@ -24,18 +24,24 @@ resource "google_compute_instance" "vm_instance" {
   machine_type = "e2-micro"
   zone = var.zone
   tags = ["dev", "web"]
-  boot_disk {
+  boot_disk { 
 
     initialize_params {
        image = "debian-cloud/debian-11"
       #image = "cos-cloud/cos-stable"
     }
   }
+  
+  attached_disk {
+    source      = google_compute_disk.default.id
+    device_name = google_compute_disk.default.name
+  }
 
   network_interface {
     network = google_compute_network.vpc_network.name
     access_config {
     }
+    
   }
 }
 
@@ -94,3 +100,11 @@ versioning {
 output "external_ip" {
 value = google_compute_instance.vm_instance.network_interface.0.access_config.0.nat_ip
 }
+  resource "google_compute_disk" "default" {
+  name = "data"
+  type = "pd-balanced"
+  zone = "us-central1-f"
+  size = "10"
+}
+ 
+
