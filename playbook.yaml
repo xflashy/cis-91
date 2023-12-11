@@ -19,18 +19,23 @@
         owner: root
         group: root
         mode: '0644'
-       
-    - name: data 
+
+    - name: Create an ext4 filesystem on /dev/sdb
       community.general.filesystem:
         fstype: ext4
+        state: present
         dev: /dev/sdb
-     
-    - name: data
+
+    - name: Mount and bind a volume
       ansible.posix.mount:
         path: /var/lib/mysql
         src: /dev/sdb
+        opts: 
+        state: mounted
         fstype: ext4
-        state: present 
+
+       
+
 
 - hosts: all
   tasks:
