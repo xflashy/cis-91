@@ -17,8 +17,8 @@
         state: mounted
         fstype: ext4
 
-    - name: Fix 'support_tools' permissions
-      shell: 'chmod a+x /var/lib/mysql'
+    #- name: Fix 'support_tools' permissions
+      #shell: 'chmod a+x /var/lib/mysql'
 
 
     - name: Install packages 
