@@ -2,6 +2,25 @@
   name: Install Apache and PHP
   become: yes
   tasks:
+
+    - name: Create an ext4 filesystem on /dev/sdb
+      community.general.filesystem:
+        fstype: ext4
+        state: present
+        dev: /dev/sdb
+
+    - name: Mount and bind a volume
+      ansible.posix.mount:
+        path: /var/lib/mysql
+        src: /dev/sdb
+        opts: 
+        state: mounted
+        fstype: ext4
+
+    - name: Fix 'support_tools' permissions
+      shell: 'chmod a+x /var/lib/mysql'
+
+
     - name: Install packages 
       ansible.builtin.apt:
         update_cache: yes
@@ -20,19 +39,8 @@
         group: root
         mode: '0644'
 
-    - name: Create an ext4 filesystem on /dev/sdb
-      community.general.filesystem:
-        fstype: ext4
-        state: present
-        dev: /dev/sdb
 
-    - name: Mount and bind a volume
-      ansible.posix.mount:
-        path: /var/lib/mysql
-        src: /dev/sdb
-        opts: 
-        state: mounted
-        fstype: ext4
+  
 
        
 
